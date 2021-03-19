@@ -2,4 +2,4 @@
 deployment:
     tasks:
         - export DEPLOYPATH=/home/user/public_html
-        - /bin/cp app.js $DEPLOYPATH
+        - /bin/cp batsy.txt $DEPLOYPATH
