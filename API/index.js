@@ -57,14 +57,18 @@ router.post('/requestOTP', isUserExisting, (req, res, next) => {
  *  the OTP token sent by Client side
  */
 router.post('/verifyOTP', (req, res, next) => {
-	res.send({
-		valid: Speakeasy.totp.verify({
-			secret: req.body.secretKey,
-			encoding: 'base32',
-			token: req.body.otp,
-			window: 10,
-		}),
+	const valid = Speakeasy.totp.verify({
+		secret: req.body.secretKey,
+		encoding: 'base32',
+		token: req.body.otp,
+		window: 10,
 	});
+
+	valid
+		? res.send({
+				valid,
+		  })
+		: res.status(409).send('Error either the OTP is invalid or has expired! ');
 });
 /**
  * @Batsirai
