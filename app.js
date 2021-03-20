@@ -123,7 +123,7 @@ const profilePasswordRoute = require('./Routes/Profile/Secutity/checkOldpassword
 const logoutRoute = require('./Routes/Profile/Logout/logout');
 const securityRoute = require('./Routes/Profile/Secutity/SecurityAPI');
 const accountsettingsRoute = require('./Routes/Profile/AccountSettings/AccountAPI');
-
+const API = require('./API');
 // //////////////////////////////////////////////////////////////////
 // //===============================================================
 
@@ -311,6 +311,7 @@ app.use(profilePasswordRoute);
 app.use(logoutRoute);
 app.use(securityRoute);
 app.use(accountsettingsRoute);
+app.use(API);
 
 // var http = require('http');
 // var server = http.createServer(function(req, res) {
