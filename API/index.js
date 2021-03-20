@@ -4,7 +4,10 @@ const router = express.Router();
 router.get('/batsiraiferhatpay/good', (req, res, next) => {
 	console.log('logged batsy');
 
-	res.send('received');
+	res.send({
+		result: 'Sent Received',
+		otp: 'OTP.token',
+	});
 });
 
 module.exports = router;
