@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/batsiraiferhatpay/requestOTP', (req, res, next) => {
-	console.log('logged batsy');
-
+router.get('/requestOTP/:phone', isUserExist, (req, res, next) => {
 	res.send({
 		result: 'Batsirai Muchareva',
 	});

@@ -29,7 +29,7 @@ const otp_resend = require('./Routes/SignUp/otp_resend');
 const adminRegister = require('./Routes/SignUp/adminRegister');
 
 // // .........................const nexmoRoute = require("./Routes/Otp/nexmoSms");
-const verifyOtpRoute = require('./Routes/Otp/verifyOtp');
+// const verifyOtpRoute = require('./Routes/Otp/verifyOtp');
 const registerRoute = require('./Routes/SignUp/register');
 
 // //            ***************  LOGIN  REQUIRING ******************                //
@@ -229,11 +229,11 @@ app.use(passwordResetRoute);
 // app.use(nexmoRoute);passwordResetVerify
 
 // //-----------------------REGISTRATION ROUTES--------------------------- //
-app.use(registerNumberOTPRoute);
-app.use(verifyOtpRoute);
-app.use(registerRoute);
-app.use(adminRegister);
-app.use(otp_resend);
+// app.use(registerNumberOTPRoute);
+// app.use(verifyOtpRoute);
+// app.use(registerRoute);
+// app.use(adminRegister);
+// app.use(otp_resend);
 
 // //------------------------HOME ROUTES------------------------ //
 app.use(homeRoute);
