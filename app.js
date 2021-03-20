@@ -6,7 +6,7 @@ const passport = require('passport'); // passport for login authentication and p
 const bodyParser = require('body-parser'); // for json encoded body
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
-
+const routes = require('./routesNames');
 // var http = require("http").createServer(app);
 // var io = require("socket.io").listen(http);
 
@@ -210,6 +210,7 @@ require('./Authentication/config/passportLogin');
 
 // // re initialize and rerun passport on each request
 // //   // `req.user` contains the authenticated user.
+app.use(routes.authentication, API);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -311,7 +312,6 @@ app.use(profilePasswordRoute);
 app.use(logoutRoute);
 app.use(securityRoute);
 app.use(accountsettingsRoute);
-app.use(API);
 
 // var http = require('http');
 // var server = http.createServer(function(req, res) {
