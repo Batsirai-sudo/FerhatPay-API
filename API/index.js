@@ -4,6 +4,25 @@ const dbConnect = require('../Database/dbconnection');
 const Speakeasy = require('speakeasy'); // speakeasy for generating token and otp
 // const nexmoOTP = require("../Otp/nexmoSms").nexmoOTP;
 
+const isUserExisting = (req, res, next) => {
+	const sql = 'SELECT AccountNumber FROM account WHERE AccountNumber=?';
+	dbConnect.query(sql, [parseInt(req.body.mobile, 10)], (err, result) => {
+		if (error) {
+			return res.status(500).send({
+				error,
+			});
+		}
+
+		result.length
+			? (() => {
+					res.status(409).json({ error: { message: 'User Exist with this account. Try another please! ' } });
+			  })()
+			: (() => {
+					next();
+			  })();
+	});
+};
+
 router.post('/requestOTP', isUserExisting, (req, res, next) => {
 	let secretKey = Speakeasy.generateSecret({ length: 20 });
 	try {
@@ -25,24 +44,5 @@ router.post('/requestOTP', isUserExisting, (req, res, next) => {
 		});
 	}
 });
-
-const isUserExisting = (req, res, next) => {
-	const sql = 'SELECT AccountNumber FROM account WHERE AccountNumber=?';
-	dbConnect.query(sql, [parseInt(req.body.mobile, 10)], (err, result) => {
-		if (error) {
-			return res.status(500).send({
-				error,
-			});
-		}
-
-		result.length
-			? (() => {
-					res.status(409).json({ error: { message: 'User Exist with this account. Try another please! ' } });
-			  })()
-			: (() => {
-					next();
-			  })();
-	});
-};
 
 module.exports = router;
