@@ -6,7 +6,7 @@ const Speakeasy = require('speakeasy'); // speakeasy for generating token and ot
 
 const isUserExisting = (req, res, next) => {
 	const sql = 'SELECT AccountNumber FROM account WHERE AccountNumber=?';
-	dbConnect.query(sql, [parseInt(req.body.mobile, 10)], (err, result) => {
+	dbConnect.query(sql, [parseInt(req.body.mobile, 10)], (error, result) => {
 		if (error) {
 			return res.status(500).send({
 				error,
