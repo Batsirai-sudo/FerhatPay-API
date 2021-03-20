@@ -58,7 +58,7 @@ router.post('/requestOTP', isUserExisting, (req, res, next) => {
  */
 router.post('/verifyOTP', (req, res, next) => {
 	const valid = Speakeasy.totp.verify({
-		secret: req.body.secretKey,
+		secret: req.body.secretKey.base32,
 		encoding: 'base32',
 		token: req.body.otp,
 		window: 10,
