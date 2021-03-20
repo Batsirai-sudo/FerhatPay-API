@@ -15,7 +15,7 @@ const isUserExisting = (req, res, next) => {
 
 		result.length
 			? (() => {
-					res.status(409).send(new Error('User Exist with this account. Try another please! '));
+					res.status(409).send('User Exist with this account. Try another please! ');
 			  })()
 			: (() => {
 					next();
