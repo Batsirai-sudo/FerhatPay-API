@@ -211,6 +211,7 @@ require('./Authentication/config/passportLogin');
 // // re initialize and rerun passport on each request
 // //   // `req.user` contains the authenticated user.
 app.use(routes.authentication, API);
+console.log(routes.authentication);
 
 app.use(passport.initialize());
 app.use(passport.session());
