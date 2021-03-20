@@ -22,7 +22,12 @@ const isUserExisting = (req, res, next) => {
 			  })();
 	});
 };
-
+/**
+ * @Batsirai
+ * @FerhatPay
+ *  User  Requesting OTP from client
+ * side to verify Mobile Number
+ */
 router.post('/requestOTP', isUserExisting, (req, res, next) => {
 	let secretKey = Speakeasy.generateSecret({ length: 20 });
 	try {
@@ -44,5 +49,50 @@ router.post('/requestOTP', isUserExisting, (req, res, next) => {
 		});
 	}
 });
+
+/**
+ * @Batsirai
+ * @FerhatPay
+ *  Verify Otp by checking the validity of
+ *  the OTP token sent by Client side
+ */
+router.post('/verifyOTP', (req, res, next) => {
+	res.send({
+		valid: Speakeasy.totp.verify({
+			secret: req.body.secretKey,
+			encoding: 'base32',
+			token: req.body.otp,
+			window: 10,
+		}),
+	});
+});
+/**
+ * @Batsirai
+ * @FerhatPay
+ *  OTP resend Request from client
+ */
+router.post('/resendOTP', (req, res, next) => {
+	const secretKey = req.body.secretKey;
+	const OTP = {
+		token: Speakeasy.totp({
+			secret: secretKey.base32,
+			encoding: 'base32',
+		}),
+		remaining: 300 - Math.floor((new Date().getTime() / 1000.0) % 30),
+	};
+	// const isSent = nexmoOTP(OTP.token, req.body.phoneNumber);
+	res.send({
+		sent: true,
+		secretKey,
+		OTP,
+	});
+});
+
+// router.get("/batsiraiferhatpay/otp-resend", (req, res, next) => {
+
+// console.log(req.header('x-api-key'));
+// console.log(req.header('x-secret-key'));
+
+// module.exports = router;
 
 module.exports = router;
