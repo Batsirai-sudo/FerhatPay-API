@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../Database/dbconnection');
-const queries = require('./queries');
-const Speakeasy = require('speakeasy'); // speakeasy for generating token and otp
+const queries = require('./config/queries');
+const Speakeasy = require('speakeasy'); // speakeasy for  generating token and otp
+const genPassword = require('./config/passwordUtils').genPassword;
+const genApiKey = require('./config/apiSecret').genApiKey;
+const generateUserObject = require('./config/generateUserObject');
+const getApiType = require('./config/apiKey');
 // const nexmoOTP = require("../Otp/nexmoSms").nexmoOTP;
 
 const isUserExisting = async (req, res, next) => {
 	try {
-		const [rows, fields] = await connection.execute(queries.getAccountNumber, [parseInt(req.body.mobile)]);
-		console.log('--------------=====11', rows);
-		console.log('--------------=====1122222', fields);
-
-		true
+		const [rows] = await connection.execute(queries.getAccountNumber, [parseInt(req.body.mobile)]);
+		rows.length > 0
 			? (() => {
 					res.status(409).send('User Exist with this account. Try another please! ');
 			  })()
@@ -19,54 +20,27 @@ const isUserExisting = async (req, res, next) => {
 					next();
 			  })();
 	} catch (error) {
-		console.log('--------------=====error', error);
-
 		res.status(500).send({
 			error,
 		});
 	}
-
-	// (error, result) => {
-	// 	if (error) {
-
-	// 	}
-
-	// });
 };
-// const isEmailExisting = async (req, res, next) => {
-// 	try {
-// 		const response = await connection.query(queries.getEmail, [req.body.email]);
-// 		console.log(response)
-// 		response.length
-// 			? (() => {
-// 					res.status(409).send('User Exist with this email. Try another please! ');
-// 			  })()
-// 			: (() => {
-// 					next();
-// 			  })();
-
-// 	} catch (error) {
-// 		return res.status(500).send({
-// 			error,
-// 		});
-// 	}
-
-// 	// connection.query(sql, [req.body.email], (error, result) => {
-// 	// 	if (error) {
-// 	// 		return res.status(500).send({
-// 	// 			error,
-// 	// 		});
-// 	// 	}
-
-// 	// 	result.length
-// 	// 		? (() => {
-// 	// 				res.status(409).send('User Exist with this email. Try another please! ');
-// 	// 		  })()
-// 	// 		: (() => {
-// 	// 				next();
-// 	// 		  })();
-// 	// });
-// };
+const isEmailExisting = async (req, res, next) => {
+	try {
+		const [rows] = await connection.execute(queries.getEmail, [req.body.email]);
+		rows.length > 0
+			? (() => {
+					res.status(409).send('User Exist with this email. Try another please! ');
+			  })()
+			: (() => {
+					next();
+			  })();
+	} catch (error) {
+		res.status(500).send({
+			error,
+		});
+	}
+};
 /**
  * @Batsirai
  * @FerhatPay
@@ -136,54 +110,52 @@ router.post('/resendOTP', (req, res, next) => {
 		OTP,
 	});
 });
+/**
+ * @Batsirai
+ * @FerhatPay
+ *  Using Transactions to ~
+ * 1) Create User user table
+ * 2) Create Account account table (amount 0)
+ * 3) Increment number of registered users
+ *
+ * Generate salt password
+ * Generate API secret key for Authentication
+ * (Optional Token)
+ * Assign API Token user or agent
+ * notification of register agent or user
+ * isAgentuser fxn
+ */
+router.post('/registration', isEmailExisting, (req, res, next) => {
+	const passwordHash = genPassword(req.body.password);
+	req.body.password = passwordHash.hash;
+	req.body.salt = passwordHash.salt;
+	req.body.API_Key_Secret = genApiKey();
+	const user = generateUserObject(req.body);
 
-// router.post('/registration', isEmailExisting, (req, res, next) => {
-// 	// const secretKey = req.body.secretKey;
-// 	// const OTP = {
-// 	// 	token: Speakeasy.totp({
-// 	// 		secret: secretKey.base32,
-// 	// 		encoding: 'base32',
-// 	// 	}),
-// 	// 	remaining: 300 - Math.floor((new Date().getTime() / 1000.0) % 30),
-// 	// };
-// 	// // const isSent = nexmoOTP(OTP.token, req.body.phoneNumber);
-// 	// res.send({
-// 	// 	sent: true,
-// 	// 	secretKey,
-// 	// 	OTP,
-// 	// });
-// });
+	const transaction = async () => {
+		try {
+			await connection.beginTransaction();
+			user.API = getApiType(req.body.type);
+			/** Creating a user first into database*/
+			const response = await connection.execute(queries.createUser, [user]);
+			console.log('responseresponse register', response);
+			await connection.commit();
+		} catch (error) {
+			await connection.rollback();
+			console.log('errorerrorerror', error);
+		}
+	};
 
-// router.get("/batsiraiferhatpay/otp-resend", (req, res, next) => {
-
-// console.log(req.header('x-api-key'));
+	transaction();
+});
+// console.log(req.header('x-api-key'));API:
 
 // console.log(req.header('x-secret-key'));
-
-// module.exports = router;
-
 module.exports = router;
 
-// // const genPassword = require();
-// const genPassword = require('../../Authentication/passwordUtils/passwordUtils').genPassword;
-
 // router.post('/batsiraiferhatpay/registration', (req, res, next) => {
-// 	let sql = 'SELECT Email FROM users WHERE Email=?';
 // 	let query = dbConnect.query(sql, req.body.data.Email, (emailerror, result) => {
-// 		if (emailerror) {
-// 			return res.send({
-// 				error: 'Error In Requesting User',
-// 				inserted: null,
-// 			});
-// 		}
-// 		if (result.length > 0) {
-// 			// Creating an object to insert data into database
-// 			// req.accountid = result.insertId;
-// 			res.send({
-// 				error: null,
-// 				inserted: false,
-// 			});
-// 		}
+//
 
 // 		if (!result.length) {
 // 			// Creating an object to insert data into database

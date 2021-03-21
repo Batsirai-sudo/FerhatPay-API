@@ -1,7 +1,17 @@
 module.exports = {
 	getEmail: 'SELECT Email FROM users WHERE Email=?',
 	getAccountNumber: 'SELECT AccountNumber FROM account WHERE AccountNumber=?',
+	getApi: 'SELECT * FROM APIs',
+	createUser: 'INSERT INTO users SET ?',
+	createAccount: 'INSERT INTO account SET ?',
 };
+
+// let account_data = {
+// 	UserID: result.insertId,
+// 	Status: 'Active',
+// 	AccountBalance: 0,
+// 	AccountNumber: req.body.mobile_number,
+// };
 
 // const con =async()=>{
 //     console.log('--------------=====started');
