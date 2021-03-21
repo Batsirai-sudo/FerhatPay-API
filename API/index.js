@@ -8,7 +8,7 @@ const Speakeasy = require('speakeasy'); // speakeasy for generating token and ot
 const isUserExisting = async (req, res, next) => {
 	try {
 		const response = await connection.query(queries.getAccountNumber, [parseInt(req.body.mobile, 10)]);
-		console.log('--------------=====', response);
+		console.log('--------------=====', response.results);
 
 		response
 			? (() => {
