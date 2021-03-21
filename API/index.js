@@ -7,10 +7,7 @@ const Speakeasy = require('speakeasy'); // speakeasy for generating token and ot
 
 const isUserExisting = async (req, res, next) => {
 	try {
-	   // const [rows, fields] = await connection.execute('SELECT * FROM `table` WHERE `name` = ? AND `age` > ?', ['Morty', 14]);
-		console.log('--------------=====connechhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhbatsiraition', connection);
-
-		const [rows, fields] = await connection.query("SELECT * FROM users");
+		const [rows, fields] = await connection.execute(queries.getAccountNumber);
 		console.log('--------------=====11', rows);
 		console.log('--------------=====11', fields);
 
