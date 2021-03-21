@@ -24,13 +24,13 @@ const authenticationRoute = require('./Authorization/splashAuth');
 
 // //            ***************  REGISTRATION  REQUIRING  ******************               //
 
-const registerNumberOTPRoute = require('./Routes/SignUp/registerNumberOTP');
-const otp_resend = require('./Routes/SignUp/otp_resend');
-const adminRegister = require('./Routes/SignUp/adminRegister');
+// const registerNumberOTPRoute = require('./Routes/SignUp/registerNumberOTP');
+// const otp_resend = require('./Routes/SignUp/otp_resend');
+// const adminRegister = require('./Routes/SignUp/adminRegister');
 
 // // .........................const nexmoRoute = require("./Routes/Otp/nexmoSms");
 // const verifyOtpRoute = require('./Routes/Otp/verifyOtp');
-const registerRoute = require('./Routes/SignUp/register');
+// const registerRoute = require('./Routes/SignUp/register');
 
 // //            ***************  LOGIN  REQUIRING ******************                //
 
