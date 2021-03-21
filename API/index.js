@@ -11,8 +11,6 @@ const isUserExisting = async (req, res, next) => {
 		console.log('--------------=====11', rows);
 		console.log('--------------=====11', fields);
 
-		// console.log('--------------=====', response._results);
-
 		true
 			? (() => {
 					res.status(409).send('User Exist with this account. Try another please! ');
