@@ -1,12 +1,8 @@
 const queries = require('./queries');
 
-const getApiType = (type, conn) => {
-	const [rows] = conn.query(queries.getApi);
-	console.log('---------------------------------', rows, 'rowsrowsrowsrowsrowsrows', type);
-
-	// const filter = rows.map((x) => x.type === type);
-	// console.log('getApiTypegetApiType', filter);
-
-	// return filter[0].api;
+const getApiType =async (type, conn) => {
+	const [rows] = await conn.query(queries.getApi);
+	const filter = rows.filter((x) => x.type === type);
+	return filter[0].api;
 };
 module.exports = getApiType;
