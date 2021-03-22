@@ -141,7 +141,7 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 			console.log('responseresponse register', response);
 			await connection.commit();
 		} catch (error) {
-			await connection.rollback();
+			// await connection.rollback();
 			console.log('errorerrorerror', error);
 		}
 	};
