@@ -9,7 +9,7 @@ const query = require('../queries');
  *  we will override with email and password
  */
 const customFields = {
-	usernameField: 'email',
+	usernameField: 'account',
 	passwordField: 'password',
 	//passReqToCallback: true, // allows us to pass back the entire request to the callback
 };
