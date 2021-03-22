@@ -139,7 +139,7 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 		try {
 			await conn.beginTransaction();
 			user.API = await getApiType(req.body.type, conn);
-
+			console.log(user);
 			/** Creating a user first into database*/
 			const response = await conn.query(queries.createUser, [user]);
 			account.UserID = response[0].insertId;
