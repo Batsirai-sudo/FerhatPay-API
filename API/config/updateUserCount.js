@@ -12,7 +12,6 @@ const updateUserCount = async (type, conn) => {
 	console.log('inside3 result', result);
 
 	await conn.query(queries.incrementRegistration, [result]);
-	console.log('inside4');
 
 	return true;
 };

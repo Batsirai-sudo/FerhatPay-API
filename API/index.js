@@ -1,49 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../Database/dbconnection');
-const queries = require('./config/queries');
+const query = require('./config/queries');
 const Speakeasy = require('speakeasy'); // speakeasy for  generating token and otp
 const genPassword = require('./config/passwordUtils').genPassword;
 const genApiKey = require('./config/apiSecret').genApiKey;
 const generateUserObject = require('./config/generateUserObject');
 const getApiType = require('./config/apiKey');
+const passport = require('passport');
+const { isEmailExisting, isUserExisting } = require('./config/checker');
 const updateUserCount = require('./config/updateUserCount');
 // const nexmoOTP = require("../Otp/nexmoSms").nexmoOTP;
 
-const isUserExisting = async (req, res, next) => {
-	try {
-		const [rows] = await connection.execute(queries.getAccountNumber, [parseInt(req.body.mobile)]);
-		rows.length > 0
-			? (() => {
-					res.status(409).send('User Exist with this account. Try another please! ');
-			  })()
-			: (() => {
-					next();
-			  })();
-	} catch (error) {
-		res.status(500).send({
-			error,
-		});
-	}
-};
-const isEmailExisting = async (req, res, next) => {
-    console.log('isEmailExisting')
-    console.log(req.body)
-	try {
-		const [rows] = await connection.execute(queries.getEmail, [req.body.email]);
-		rows.length > 0
-			? (() => {
-					res.status(409).send('User Exist with this email. Try another please! ');
-			  })()
-			: (() => {
-					next();
-			  })();
-	} catch (error) {
-		res.status(500).send({
-			error,
-		});
-	}
-};
 /**
  * @Batsirai
  * @FerhatPay
@@ -143,11 +111,11 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 			user.API = await getApiType(req.body.type, conn);
 			console.log(user);
 			/** Creating a user first into database*/
-			const response = await conn.query(queries.createUser, [user]);
+			const response = await conn.query(query.createUser, [user]);
 			account.UserID = response[0].insertId;
 
 			/** Creating an Account  into database*/
-			await conn.query(queries.createAccount, [account]);
+			await conn.query(query.createAccount, [account]);
 			await updateUserCount(req.body.type, conn);
 			await conn.commit();
 			await conn.release();
@@ -165,94 +133,32 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 
 	transaction();
 });
+
+/**
+ * @Batsirai
+ * @FerhatPay
+ *  If this function for authenticatin for passsport
+ *  is called and logs individual  which return successRedirect or fail
+ * on authentication  successful or not
+ */
+
+router.post(
+	'/login',
+	passport.authenticate('local', {
+		successRedirect: '/login-success',
+		failureRedirect: '/error',
+	})
+);
+
+router.get('/error', (req, res) => {
+	res.status(409).send('Login in failed credentials invalid');
+});
+
+router.get('/login-success', (req, res) => {
+	res.send({ login: true });
+});
+
 // console.log(req.header('x-api-key'));API:
 
 // console.log(req.header('x-secret-key'));
 module.exports = router;
-
-// router.post('/batsiraiferhatpay/registration', (req, res, next) => {
-// 	let query = dbConnect.query(sql, req.body.data.Email, (emailerror, result) => {
-//
-
-// 		if (!result.length) {
-// 			// Creating an object to insert data into database
-// 			// req.accountid = result.insertId;
-
-// 			//// ................................Check Email Before cOntinue.......................
-// 			let passwordHash = genPassword(req.body.data.password);
-// 			console.log(passwordHash);
-// 			let user_data = {
-// 				FullName: req.body.data.FullName,
-// 				LastName: req.body.data.LastName,
-// 				Password: passwordHash.hash,
-// 				Email: req.body.data.Email,
-// 				DOB: req.body.dob,
-// 				gender: req.body.gender,
-// 				State: req.body.data.State,
-// 				StreetAddress: req.body.data.StreetAddress,
-// 				NationalID: req.body.data.NationalID,
-// 				StudentID: req.body.data.StudentID,
-// 				salt: passwordHash.salt,
-// 				user_status: 'Active',
-// 				passwordResetStatus: 'False',
-// 				ContactNo: req.body.mobile_number,
-// 				secretToken: req.body.secret_key,
-// 			};
-
-// 			//          OkPacket {
-// 			// App 945988 output:   fieldCount: 0,
-// 			// App 945988 output:   affectedRows: 1,
-// 			// App 945988 output:   insertId: 177,
-// 			// App 945988 output:   serverStatus: 2,
-// 			// App 945988 output:   warningCount: 0,
-// 			// App 945988 output:   message: '',
-// 			// App 945988 output:   protocol41: true,
-// 			// App 945988 output:   changedRows: 0
-// 			// App 945988 output: }
-
-// 			let ssql = 'INSERT INTO users SET ?';
-// 			let queery = dbConnect.query(ssql, [user_data], (err, result) => {
-// 				if (err) throw err;
-
-// 				if (result) {
-// 					let account_data = {
-// 						UserID: result.insertId,
-// 						Status: 'Active',
-// 						AccountBalance: 0,
-// 						AccountNumber: req.body.mobile_number,
-// 					};
-
-// 					let sql2 = 'INSERT INTO account SET ?';
-// 					let query2 = dbConnect.query(sql2, [account_data], (err2, result2) => {
-// 						if (err2) throw err2;
-
-// 						if (result2) {
-// 							userIncrementer(() => {
-// 								res.send({ inserted: true, error: null });
-// 							});
-// 						}
-// 					});
-// 				}
-// 			});
-
-// 			/// ...............................................................................
-// 		}
-// 	});
-// });
-
-// module.exports = router;
-
-// function userIncrementer(callback) {
-// 	let sql = 'SELECT UserCounter FROM statistics WHERE id=1';
-// 	let query = dbConnect.query(sql, (error, result) => {
-// 		let calculTotal = result[0].UserCounter + 1;
-
-// 		let increment = { UserCounter: calculTotal };
-
-// 		let sql2 = 'UPDATE statistics SET ? WHERE id = 1';
-// 		let query2 = dbConnect.query(sql2, [increment], (error, rows) => {
-// 			if (error) throw error;
-// 			if (rows) callback();
-// 		});
-// 	});
-// }
