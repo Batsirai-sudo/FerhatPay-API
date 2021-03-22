@@ -2,7 +2,7 @@ const queries = require('./queries');
 
 const updateUserCount = async (type, conn) => {
 	console.log('inside---------');
-    console.log('inside1 rows', conn.execute(queries.currentRegistrationCount););
+	console.log('inside1 rows', conn.execute(queries.currentRegistrationCount));
 
 	const [rows] = await conn.execute(queries.currentRegistrationCount);
 	await conn.query(queries.incrementRegistration, [{ UserCounter: addFxn(rows[0].UserCounter) }]);
