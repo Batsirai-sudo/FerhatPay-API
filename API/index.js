@@ -154,6 +154,7 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 			});
 		} catch (error) {
 			await conn.rollback();
+			console.log(error);
 			res.status(500).send({
 				error,
 			});
