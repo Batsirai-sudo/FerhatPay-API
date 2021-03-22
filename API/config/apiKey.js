@@ -1,9 +1,8 @@
-const connection = require('../../Database/dbconnection');
 const queries = require('./queries');
 
-const getApiType = async (type) => {
+const getApiType = async (type, conn) => {
 	try {
-		const [rows] = await connection.execute(queries.getApi);
+		const [rows] = await conn.execute(queries.getApi);
 		const filter = rows.map((x) => x.type === type);
 		return filter[0].api;
 	} catch (error) {
