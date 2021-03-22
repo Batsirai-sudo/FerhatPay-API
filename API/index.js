@@ -137,7 +137,7 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 			const conn = await connection.getConnection();
 			await conn.beginTransaction();
 			user.API = 'getApiType(req.body.type, conn);';
-			console.log('user.APIuser.API', user.API);
+			console.log('42555', user);
 
 			/** Creating a user first into database*/
 			const response = await conn.execute(queries.createUser, [user]);
