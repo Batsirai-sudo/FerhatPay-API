@@ -142,7 +142,7 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 			const response = await conn.execute(queries.createUser, [user]);
 			console.log('responseresponse register', response);
 			await conn.commit();
-			const conn = await connection.releaseConnection(conn);
+			await connection.releaseConnection(conn);
 		} catch (error) {
 			// await connection.rollback();
 			console.log('errorerrorerror', error);
