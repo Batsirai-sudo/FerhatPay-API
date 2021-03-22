@@ -146,7 +146,7 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 
 			/** Creating an Account  into database*/
 			await conn.query(queries.createAccount, [account]);
-			await updateUserCount(req.body.type);
+			await updateUserCount(req.body.type, conn);
 			await conn.commit();
 			await conn.release();
 			res.send({
