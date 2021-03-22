@@ -28,6 +28,7 @@ const customFields = {
  */
 
 const verifyCallback = async (username, password, done) => {
+	console.log(' verifyCallback ');
 	try {
 		const [rows, fields] = await connection.execute(query.getUserByAccountNumber, [username]);
 		if (rows.length > 0) {
