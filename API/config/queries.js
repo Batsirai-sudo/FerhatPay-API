@@ -4,7 +4,28 @@ module.exports = {
 	getApi: 'SELECT * FROM APIs',
 	createUser: 'INSERT INTO users SET ?',
 	createAccount: 'INSERT INTO account SET ?',
+	incrementRegistration: 'UPDATE statistics SET ? WHERE id = 1',
+	currentRegistrationCount: 'SELECT UserCounter FROM statistics WHERE id=1',
 };
+
+// });
+
+// module.exports = router;
+
+// function userIncrementer(callback) {
+// 	let sql = 'SELECT UserCounter FROM statistics WHERE id=1';
+// 	let query = dbConnect.query(sql, (error, result) => {
+// 		let calculTotal = result[0].UserCounter + 1;
+
+// 		let increment = { UserCounter: calculTotal };
+
+// 		let sql2 = 'UPDATE statistics SET ? WHERE id = 1';
+// 		let query2 = dbConnect.query(sql2, [increment], (error, rows) => {
+// 			if (error) throw error;
+// 			if (rows) callback();
+// 		});
+// 	});
+// }
 
 // let account_data = {
 // 	UserID: result.insertId,

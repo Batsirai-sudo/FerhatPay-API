@@ -7,6 +7,7 @@ const genPassword = require('./config/passwordUtils').genPassword;
 const genApiKey = require('./config/apiSecret').genApiKey;
 const generateUserObject = require('./config/generateUserObject');
 const getApiType = require('./config/apiKey');
+const updateUserCount = require('./config/updateUserCount');
 // const nexmoOTP = require("../Otp/nexmoSms").nexmoOTP;
 
 const isUserExisting = async (req, res, next) => {
@@ -130,23 +131,32 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 	req.body.password = passwordHash.hash;
 	req.body.salt = passwordHash.salt;
 	req.body.API_Key_Secret = genApiKey();
-	const user = generateUserObject(req.body);
+	const user = generateUserObject(req.body).user;
+	const account = generateUserObject(req.body).account;
 
 	const transaction = async () => {
 		try {
 			const conn = await connection.getConnection();
 			await conn.beginTransaction();
 			user.API = await getApiType(req.body.type, conn);
-			console.log('user.APIuser.API', user);
 
 			/** Creating a user first into database*/
 			const response = await conn.query(queries.createUser, [user]);
-			console.log('responseresponse register', response);
+			account.UserID = response[0].insertId;
+
+			/** Creating an Account  into database*/
+			await conn.query(queries.createAccount, [account]);
+			await updateUserCount(req.body.type);
 			await conn.commit();
-			 await conn.release();
+			await conn.release();
+			res.send({
+				registration: true,
+			});
 		} catch (error) {
-			// await connection.rollback();
-			console.log('errorerrorerror', error);
+			await conn.rollback();
+			res.status(500).send({
+				error,
+			});
 		}
 	};
 
