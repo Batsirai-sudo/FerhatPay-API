@@ -135,8 +135,8 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 	const account = generateUserObject(req.body).account;
 
 	const transaction = async () => {
+		const conn = await connection.getConnection();
 		try {
-			const conn = await connection.getConnection();
 			await conn.beginTransaction();
 			user.API = await getApiType(req.body.type, conn);
 
