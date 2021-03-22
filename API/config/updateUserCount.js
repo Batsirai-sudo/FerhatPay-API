@@ -1,11 +1,17 @@
 const queries = require('./queries');
 
 const updateUserCount = async (type, conn) => {
-	const [rows] = await conn.query(queries.currentRegistrationCount);
-	await conn.query(queries.incrementRegistration, [{ UserCounter: addFxn(rows[0].UserCounter) }]);
-	const result = userTypeIncrement(type, rows[0]);
-	await conn.query(queries.incrementRegistration, [result]);
-	return true;
+	console.log('inside');
+	try {
+		const [rows] = await conn.query(queries.currentRegistrationCount);
+		await conn.query(queries.incrementRegistration, [{ UserCounter: addFxn(rows[0].UserCounter) }]);
+		const result = userTypeIncrement(type, rows[0]);
+		await conn.query(queries.incrementRegistration, [result]);
+		return true;
+	} catch (error) {
+		console.log(error);
+		throw new Error(error);
+	}
 };
 module.exports = updateUserCount;
 
