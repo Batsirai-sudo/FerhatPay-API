@@ -5,7 +5,7 @@ module.exports = {
 	createUser: 'INSERT INTO users SET ?',
 	createAccount: 'INSERT INTO account SET ?',
 	incrementRegistration: 'UPDATE statistics SET ? WHERE id = 1',
-	currentRegistrationCount: 'SELECT UserCounter FROM statistics WHERE id=1',
+	currentRegistrationCount: 'SELECT * FROM statistics',
 };
 
 // });
