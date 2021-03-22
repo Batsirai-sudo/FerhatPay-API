@@ -136,12 +136,12 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 		try {
 			const conn = await connection.getConnection();
 			await conn.beginTransaction();
-			user.API = 'getApiType(req.body.type, conn);';
-			console.log('42555', user);
+			user.API = getApiType(req.body.type, conn);
+			console.log('user.APIuser.API', user.API);
 
 			/** Creating a user first into database*/
-			const response = await conn.execute(queries.createUser, [user]);
-			console.log('responseresponse register', response);
+			// const response = await conn.execute(queries.createUser, [user]);
+			// console.log('responseresponse register', response);
 			await conn.commit();
 			await connection.releaseConnection(conn);
 		} catch (error) {
