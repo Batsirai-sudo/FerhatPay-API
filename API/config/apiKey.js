@@ -2,7 +2,7 @@ const queries = require('./queries');
 
 const getApiType = (type, conn) => {
 	// const [rows] = conn.execute(queries.getApi);
-	console.log('---------------------------------', conn, 'rowsrowsrowsrowsrowsrows', type, rows);
+	console.log('---------------------------------', conn, 'rowsrowsrowsrowsrowsrows', type);
 
 	// const filter = rows.map((x) => x.type === type);
 	// console.log('getApiTypegetApiType', filter);
