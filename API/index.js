@@ -27,6 +27,8 @@ const isUserExisting = async (req, res, next) => {
 	}
 };
 const isEmailExisting = async (req, res, next) => {
+    console.log('isEmailExisting')
+    console.log(req.body)
 	try {
 		const [rows] = await connection.execute(queries.getEmail, [req.body.email]);
 		rows.length > 0
