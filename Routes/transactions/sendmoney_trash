@@ -1,0 +1,320 @@
+const express = require("express");
+const router = express.Router();
+const dbConnect = require("../../../Database/dbconnection");
+
+const isAuth = require("../../Authorization/authMiddleware").isAuth;
+
+router.post("/sendMoney", isAuth, (req, res, next) => {
+  let userid = req.session.passport.user;
+  console.log(req.body);
+  console.log(req.user);
+
+  let feeid = 1;
+
+  let sql = "SELECT * FROM transactionsFee  WHERE id = ?";
+  dbConnect.query(sql, [feeid], (error, results) => {
+    console.log(results[0]);
+
+    if (error) {
+      return res.send({
+        data: null,
+        authorization: true,
+        error: "Database Error",
+      });
+    }
+
+    if (results[0]) {
+      let transactionFee = results[0].sendMoneyFee;
+
+      // intention of this is to reduce the user Amount for Account
+      let sentAmount = req.body.sendData.cost;
+
+      let totalTransactionSendAmount = transactionFee + sentAmount;
+      let transactiontype = "Send Money";
+      // req.session.totalSendAmount = transactionFee + req.body.sendData.cost;
+      // req.session.transactiontype = "Send Money";
+
+      let UserAccountID = req.body.paymentData.accountID;
+      let RecepientAccountNumber = req.body.paymentData.recepientAccountNumber;
+      let RecepientAccountID = req.body.paymentData.recepientAccountNumber;
+
+      let accountBalance = req.body.paymentData.accountBalance;
+      let sendAccountBalance = accountBalance - req.session.totalSendAmount;
+
+      let sentTransactiondata = {
+        AccountBalance: sendAccountBalance,
+      };
+
+      let RecepientTransactiondata = {
+        AccountBalance: transactionsCalculatedAmount,
+      };
+
+      let transSendsql =
+        "UPDATE  account SET ? WHERE AccountNumber = ? AND id = ?";
+
+      let query = dbConnect.query(
+        transSendsql,
+        [
+          sentTransactiondata,
+          req.body.paymentData.accountNumber,
+          UserAccountID,
+        ],
+        (err, rows) => {
+          let transsql =
+            "UPDATE  account SET ? WHERE AccountNumber = ? AND id = ?";
+          dbConnect.query(
+            transsql,
+            [
+              RecepientTransactiondata,
+              RecepientAccountNumber,
+              RecepientAccountID,
+            ],
+            (err, rows) => {}
+          );
+
+          //   console.log(rows);
+          //   console.log("rows");
+
+          //   if (err) {
+          //     return res.send({
+          //       data: null,
+          //       authorization: true,
+          //       error: "Database Error",
+          //     });
+          //   }
+
+          //   if (!rows.affectedRows) {
+          //     return res.send({
+          //       data: null,
+          //       authorization: true,
+          //       error: "No User Found",
+          //     });
+          //   }
+
+          //   if (rows.affectedRows) {
+          //     let sql =
+          //       "SELECT account.AccountBalance  FROM  account  WHERE account.id = ?";
+          //     let query = dbConnect.query(sql, [userid], (err, result) => {
+          //       if (err) throw err;
+
+          //       console.log(result);
+          //       res.redirect("/updateMechantAmount");
+          //       // res.send({ data: result, authorization: true });
+          //     });
+
+          //     // return res.send({
+          //     //   data: rows.affectedRows,
+          //     //   authorization: true,
+          //     //   error: false,
+          //     // });
+          //   }
+        }
+      );
+    }
+
+    //   if (!user[0]) {
+    //     return res.send({ data: null, authorization: true, error: "Error" });
+    //   }
+
+    //   if (user[0]) {
+    //     console.log(user);
+
+    //     return res.send({ data: user[0], authorization: true, error: false });
+    //   }
+  });
+  // next();
+});
+
+router.get("/updateMechantAmount", mechantsCheck, (req, res, next) => {
+  // let userid = req.session.passport.user;
+  console.log("inside  updateMechantAmount");
+
+  console.log("==========================================mechant inside");
+
+  console.log(req.mealMechant);
+  console.log("============================================mechantout");
+
+  let accountid = req.mealMechant;
+  req.mealMechant = null;
+
+  let sql = "SELECT AccountBalance FROM account  WHERE id = ?";
+  dbConnect.query(sql, [accountid], (error, balanceresults) => {
+    console.log(balanceresults[0]);
+
+    if (error) {
+      return res.send({ data: null, authorization: true, error: true });
+    }
+
+    if (balanceresults[0]) {
+      let addBalance =
+        parseInt(balanceresults[0].AccountBalance) +
+        req.session.totalTransactionAmount;
+      console.log(balanceresults[0].AccountBalance);
+      console.log(req.session.totalTransactionAmount);
+      req.session.totalTransactionAmount = null;
+
+      console.log(addBalance);
+      let updateAccountdata = {
+        AccountBalance: addBalance,
+      };
+
+      let sql = "UPDATE  account SET ? WHERE id = ?";
+
+      let query = dbConnect.query(
+        sql,
+        [updateAccountdata, accountid],
+        (err, rows) => {
+          if (err) {
+            console.log("error");
+
+            return res.send({ data: null, authorization: true, error: true });
+          }
+
+          if (!rows.affectedRows) {
+            console.log("not sent");
+
+            return res.send({
+              data: null,
+              authorization: true,
+              error: "Error",
+            });
+          }
+
+          if (rows.affectedRows) {
+            console.log(rows.affectedRows);
+            console.log("sent");
+
+            res.redirect("/paymentCheckoutTransaction");
+
+            // return res.send({
+            //   data: rows.affectedRows,
+            //   authorization: true,
+            //   error: false,
+            // });
+          }
+        }
+      );
+    }
+  });
+});
+
+router.get("/paymentCheckoutTransaction", (req, res, next) => {
+  let userid = req.session.passport.user;
+  console.log(" inside paymentCheckoutTransaction");
+
+  let acoountID = req.session.accountID;
+  // req.session.transactionFee;
+  // req.session.transactionAmount;
+  // req.session.transactiontype;
+  let notificationStatus = 1;
+  let transactionDescription = " ";
+  if (req.session.transactiontype === "Compo Meal") {
+    transactionDescription = "You have purchased Compo Meal Ticket";
+  }
+  if (req.session.transactiontype === "Breakfast") {
+    transactionDescription = "You have purchased Breakfast Meal Ticket";
+  }
+  if (req.session.transactiontype === "Lunch") {
+    transactionDescription = "You have purchased Lunch Meal Ticket";
+  }
+  if (req.session.transactiontype === "Dinner") {
+    transactionDescription = "You have purchased Dinner Meal Ticket";
+  }
+
+  let paymentInsertTransactions = {
+    AccountID: acoountID,
+    UserID: userid,
+    TransactionDescription: transactionDescription,
+    Amount: req.session.transactionAmount,
+    TransactionFee: req.session.transactionFee,
+    Transactiontype: req.session.transactiontype,
+    NotificationStatus: notificationStatus,
+    TicketsQuantity: req.session.quantity,
+    // AccountID: parseInt(req.body.phoneNumber, 10),
+  };
+
+  let insertsql = "INSERT INTO paymentTransactions SET ?";
+  let queryinsert = dbConnect.query(
+    insertsql,
+    paymentInsertTransactions,
+    (errork, row) => {
+      if (errork) {
+        return res.send({
+          error: "Could Not complete Request",
+          result: null,
+        });
+      }
+
+      if (row) {
+        console.log(row);
+        return res.send({
+          data: row.insertId,
+          authorization: true,
+          error: false,
+        });
+      }
+    }
+  );
+
+  // transaction id sender& receiver & refid
+
+  // transaction notification
+  // notification status
+
+  // let userid = req.session.passport.user;
+  // console.log("inside  updateMechantAmount");
+  // console.log("==========================================mechant inside");
+  // console.log(req.mealMechant);
+  // console.log("============================================mechantout");
+  // let accountid = req.mealMechant;
+  // req.mealMechant = null;
+  // let sql = "SELECT AccountBalance FROM account  WHERE id = ?";
+  // dbConnect.query(sql, [accountid], (error, balanceresults) => {
+  //   console.log(balanceresults[0]);
+  //   if (error) {
+  //     return res.send({ data: null, authorization: true, error: true });
+  //   }
+  //   if (balanceresults[0]) {
+  //     let addBalance =
+  //       parseInt(balanceresults[0].AccountBalance) +
+  //       req.session.totalTransactionAmount;
+  //     console.log(balanceresults[0].AccountBalance);
+  //     console.log(req.session.totalTransactionAmount);
+  //     req.session.totalTransactionAmount = null;
+  //     console.log(addBalance);
+  //     let updateAccountdata = {
+  //       AccountBalance: addBalance,
+  //     };
+  //     let sql = "UPDATE  account SET ? WHERE id = ?";
+  //     let query = dbConnect.query(
+  //       sql,
+  //       [updateAccountdata, accountid],
+  //       (err, rows) => {
+  //         if (err) {
+  //           console.log("error");
+  //           return res.send({ data: null, authorization: true, error: true });
+  //         }
+  //         if (!rows.affectedRows) {
+  //           console.log("not sent");
+  //           return res.send({
+  //             data: null,
+  //             authorization: true,
+  //             error: "Error",
+  //           });
+  //         }
+  //         if (rows.affectedRows) {
+  //           console.log(rows.affectedRows);
+  //           console.log("sent");
+  //           return res.send({
+  //             data: rows.affectedRows,
+  //             authorization: true,
+  //             error: false,
+  //           });
+  //         }
+  //       }
+  //     );
+  //   }
+  // });
+});
+
+module.exports = router;
