@@ -142,13 +142,13 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
  * on authentication  successful or not
  */
 
-router.post(
-	'/login',
-	passport.authenticate('local', {
-		successRedirect: '/login-success',
-		failureRedirect: '/error',
-	})
-);
+router.post('/login', (req, res, next) => {
+	console.log('loginloginloginloginloginloginloginloginloginlogin');
+	// passport.authenticate('local', {
+	// 	successRedirect: '/login-success',
+	// 	failureRedirect: '/error',
+	// })
+});
 
 router.get('/error', (req, res) => {
 	res.status(409).send('Login in failed credentials invalid');
