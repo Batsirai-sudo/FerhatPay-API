@@ -1,8 +1,9 @@
 const connection = require('../../Database/dbconnection');
+const query = require('./queries');
 
 const isUserExisting = async (req, res, next) => {
 	try {
-		const [rows] = await connection.execute(queries.getAccountNumber, [parseInt(req.body.mobile)]);
+		const [rows] = await connection.execute(query.getAccountNumber, [parseInt(req.body.mobile)]);
 		rows.length > 0
 			? (() => {
 					res.status(409).send('User Exist with this account. Try another please! ');
@@ -11,6 +12,7 @@ const isUserExisting = async (req, res, next) => {
 					next();
 			  })();
 	} catch (error) {
+		console.log(error);
 		res.status(500).send({
 			error,
 		});
@@ -18,7 +20,7 @@ const isUserExisting = async (req, res, next) => {
 };
 const isEmailExisting = async (req, res, next) => {
 	try {
-		const [rows] = await connection.execute(queries.getEmail, [req.body.email]);
+		const [rows] = await connection.execute(query.getEmail, [req.body.email]);
 		rows.length > 0
 			? (() => {
 					res.status(409).send('User Exist with this email. Try another please! ');
