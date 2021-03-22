@@ -147,7 +147,10 @@ router.post(
 	passport.authenticate('local', {
 		successRedirect: '/login-success',
 		failureRedirect: '/error',
-	})
+	}),
+	(req, res, next) => {
+		console.log('loginloginloginloginloginloginloginloginloginlogin');
+	}
 );
 
 router.get('/error', (req, res) => {
