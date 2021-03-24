@@ -5,7 +5,9 @@ const bodyParser = require('body-parser'); // for json encoded body
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 const routes = require('./routesNames');
-
+const flash = require("connect-flash");
+var cookieParser = require('cookie-parser')
+ 
 /** AUTHENTICATION  REQUIRING
  * REGISTRATION
  * LOGIN
@@ -16,12 +18,15 @@ const API = require('./API');
 /**
  * Include the passport files for login authentication
  */
-require('./API/config/passport');
+
 
 /**
  * Middlewares chain includede
  * in every request for route made to the server
  */
+ app.use(cookieParser())
+ app.use(flash())
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(function (req, res, next) {
@@ -50,6 +55,7 @@ app.use(
 		cookie: { secure: false },
 	})
 );
+require('./API/config/passport')
 app.use(passport.initialize());
 app.use(passport.session());
 

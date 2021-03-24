@@ -142,19 +142,16 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
  * on authentication  successful or not
  */
 
-router.post(
-	'/login',
+router.post('/login',
 	passport.authenticate('local', {
-		successRedirect: '/login-success',
-		failureRedirect: '/error',
-	}),
-	(req, res, next) => {
-		console.log('loginloginloginloginloginloginloginloginloginlogin');
-	}
+		successRedirect: '/batsiraiferhatpay/authentication/login-success',
+		failureRedirect: '/batsiraiferhatpay/authentication/error',
+		failureFlash:true
+	})
 );
 
 router.get('/error', (req, res) => {
-	res.status(409).send('Login in failed credentials invalid');
+	res.status(401).send(req.flash('error')[0]);
 });
 
 router.get('/login-success', (req, res) => {

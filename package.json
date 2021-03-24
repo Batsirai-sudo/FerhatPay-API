@@ -25,6 +25,7 @@
     "passport-local": "^1.0.0",
     "patch-package": "^6.2.2",
     "socket.io": "^2.3.0",
+    "cookie-parser": "^1.4.5",
     "speakeasy": "^2.0.0",
     "nexmo": "^2.8.0"
   },
