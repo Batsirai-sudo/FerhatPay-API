@@ -11,7 +11,7 @@ const query = require('../queries');
 const customFields = {
 	usernameField: 'account',
 	passwordField: 'password',
-	//passReqToCallback: true, // allows us to pass back the entire request to the callback
+//	passReqToCallback: true, // allows us to pass back the entire request to the callback
 };
 /**
  * @param {email} username
@@ -73,15 +73,18 @@ passport.use(strategy);
  */
 passport.serializeUser((user, done) => {
 	done(null, user.id);
-	console.log('serialized');
-	console.log(user.id);
+
 });
 
 /*
  * Used to deserialize the user
  */
 passport.deserializeUser(async (id, done) => {
-	console.log('deserialized');
+	try{
 	const [rows, fields] = await connection.execute(query.getUserByID, [id]);
-	done(err, rows[0]);
+	done(null, rows[0]);
+	}catch(e){
+	    done(null)
+
+	}
 });
