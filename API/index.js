@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../Database/dbconnection');
+var nodemailer = require('nodemailer');
 const query = require('./config/queries');
 const Speakeasy = require('speakeasy'); // speakeasy for  generating token and otp
 const genPassword = require('./config/passwordUtils').genPassword;
@@ -10,8 +11,8 @@ const getApiType = require('./config/apiKey');
 const passport = require('passport');
 const { isEmailExisting, isUserExisting } = require('./config/checker');
 const updateUserCount = require('./config/updateUserCount');
+const sendResetEmail = require('./config/nodemailer');
 // const nexmoOTP = require("../Otp/nexmoSms").nexmoOTP;
-
 /**
  * @Batsirai
  * @FerhatPay
@@ -39,7 +40,6 @@ router.post('/requestOTP', isUserExisting, (req, res, next) => {
 		});
 	}
 });
-
 /**
  * @Batsirai
  * @FerhatPay
@@ -133,7 +133,6 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
 
 	transaction();
 });
-
 /**
  * @Batsirai
  * @FerhatPay
@@ -141,24 +140,38 @@ router.post('/registration', isEmailExisting, (req, res, next) => {
  *  is called and logs individual  which return successRedirect or fail
  * on authentication  successful or not
  */
-
-router.post('/login',
+router.post(
+	'/login',
 	passport.authenticate('local', {
 		successRedirect: '/batsiraiferhatpay/authentication/login-success',
 		failureRedirect: '/batsiraiferhatpay/authentication/error',
-		failureFlash:true
+		failureFlash: true,
 	})
 );
-
 router.get('/error', (req, res) => {
 	res.status(401).send(req.flash('error')[0]);
 });
-
 router.get('/login-success', (req, res) => {
 	res.send({ login: true });
 });
+router.post('/resetPassword', async (req, res, next) => {
+	const email = req.body.email;
+	try {
+		const [rows, fields] = await connection.execute(query.checkEmailForPasswordReset, [email]);
+		if (rows.length > 0) {
+			const response = await sendResetEmail();
+
+			res.send({ response });
+		}
+	} catch (error) {
+		res.status(500).send({
+			error,
+		});
+	}
+});
+
+module.exports = router;
 
 // console.log(req.header('x-api-key'));API:
 
 // console.log(req.header('x-secret-key'));
-module.exports = router;

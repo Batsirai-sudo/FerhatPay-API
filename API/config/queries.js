@@ -10,4 +10,5 @@ module.exports = {
 		'SELECT  users.*, account.AccountNumber, account.account_id FROM account JOIN users ON account.UserID=users.id WHERE account.AccountNumber = ?',
 	getUserByID:
 		'SELECT users.*,account.AccountNumber, account.account_id FROM users JOIN account ON users.id = account.UserID where users.id =? ',
+	checkEmailForPasswordReset: 'SELECT Email FROM users WHERE Email=?',
 };
