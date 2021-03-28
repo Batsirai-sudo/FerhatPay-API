@@ -161,8 +161,9 @@ router.post('/resetPassword', async (req, res, next) => {
 		if (rows.length > 0) {
 			const response = await sendResetEmail();
 
-			res.send({ response });
+			return res.send({ response });
 		}
+		res.status(401).send('No user found');
 	} catch (error) {
 		res.status(500).send({
 			error,
