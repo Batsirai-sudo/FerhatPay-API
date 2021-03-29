@@ -159,7 +159,7 @@ router.post('/resetPassword', async (req, res, next) => {
 	try {
 		const [rows, fields] = await connection.execute(query.checkEmailForPasswordReset, [email]);
 		if (rows.length > 0) {
-			const response = await sendResetEmail();
+			const response = await sendResetEmail(email);
 
 			return res.send({ response });
 		}

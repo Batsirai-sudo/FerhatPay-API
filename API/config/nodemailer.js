@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 const nodemailConstamts = require('../constants');
 
-const sendResetEmail = () => {
+const sendResetEmail = (to) => {
 	const { service, user, pass } = nodemailConstamts;
 	const { from, subject, html } = nodemailConstamts.options;
 
@@ -15,7 +15,7 @@ const sendResetEmail = () => {
 
 	var mailOptions = {
 		from,
-		to: req.body.email,
+		to,
 		subject,
 		html,
 	};
