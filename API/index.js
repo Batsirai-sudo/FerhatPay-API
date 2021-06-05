@@ -177,3 +177,4 @@ module.exports = router;
 // console.log(req.header('x-api-key'));API:
 
 // console.log(req.header('x-secret-key'));
+//ssh://ferhmguw@ferhatpay.com:21098/home/ferhmguw/ferhatPayServer

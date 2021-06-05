@@ -13,7 +13,6 @@ function genPassword(password) {
 }
 
 //hash and salt from database
-
 function validPassword(password, hash, salt) {
 	var hashVerify = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
 
